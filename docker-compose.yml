@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  wb-e-learning-backend:
+    container_name: wb-e-learning-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:password@wb-postgres:5432/wb_elearning_db
+    depends_on:
+      - wb-postgres
+    networks:
+      - wb_network
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+
+  wb-postgres:
+    container_name: wb-postgres
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: wb_elearning_db
+    ports:
+      - '5432:5432'
+    networks:
+      - wb_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+networks:
+  wb_network:
+
+volumes:
+  postgres_data:
